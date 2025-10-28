@@ -1,0 +1,118 @@
+// Sample User and Employees
+const sampleUser = { username: "user1", password: "pass123" };
+const employees = [
+  {
+    id: 1,
+    name: "Alice Johnson",
+    department: "HR",
+    email: "alice@example.com",
+    phone: "123-456-7890",
+  },
+  {
+    id: 2,
+    name: "Bob Smith",
+    department: "Engineering",
+    email: "bob@example.com",
+    phone: "234-567-8901",
+  },
+  {
+    id: 3,
+    name: "Carol Lee",
+    department: "Marketing",
+    email: "carol@example.com",
+    phone: "345-678-9012",
+  },
+];
+const departments = {
+  HR: [employees[0]],
+  Engineering: [employees[1]],
+  Marketing: [employees[2]],
+};
+
+// Show section
+function showSection(sectionId) {
+  document.querySelectorAll(".section").forEach((sec) => (sec.style.display = "none"));
+  document.getElementById(sectionId).style.display = "block";
+}
+
+// Login
+document.getElementById("loginForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  if (username === sampleUser.username && password === sampleUser.password) {
+    alert("Login successful!");
+    showSection("employeeSection");
+    displayEmployees();
+  } else {
+    alert("Invalid credentials!");
+  }
+});
+
+// Display employees
+const employeesUl = document.getElementById("employeesUl");
+const searchInput = document.getElementById("searchInput");
+
+function displayEmployees(filter = "") {
+  employeesUl.innerHTML = "";
+  employees
+    .filter((emp) => emp.name.toLowerCase().includes(filter.toLowerCase()))
+    .forEach((emp) => {
+      const li = document.createElement("li");
+      li.textContent = `${emp.name} - ${emp.department}`;
+      li.onclick = () => showProfile(emp.id);
+      employeesUl.appendChild(li);
+    });
+}
+
+searchInput.addEventListener("input", (e) => displayEmployees(e.target.value));
+
+// Departments
+const departmentList = document.getElementById("departmentList");
+
+function displayDepartments() {
+  departmentList.innerHTML = "";
+  for (let dep in departments) {
+    const li = document.createElement("li");
+    li.textContent = dep;
+
+    const ul = document.createElement("ul");
+    departments[dep].forEach((emp) => {
+      const empLi = document.createElement("li");
+      empLi.textContent = emp.name;
+      empLi.onclick = () => showProfile(emp.id);
+      ul.appendChild(empLi);
+    });
+
+    li.appendChild(ul);
+    departmentList.appendChild(li);
+  }
+}
+
+displayDepartments();
+
+// Profile
+function showProfile(id) {
+  const emp = employees.find((e) => e.id === id);
+  document.getElementById("profileName").textContent = emp.name;
+  document.getElementById("profileDept").textContent = emp.department;
+  document.getElementById("profileEmail").textContent = emp.email;
+  document.getElementById("profilePhone").textContent = emp.phone;
+  showSection("profile");
+}
+
+// Back to employee list
+function backToEmployeeList() {
+  showSection("employeeSection");
+}
+
+// Logout
+function logout() {
+  showSection("homeSection");
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+}
+
+// Initialize
+showSection("homeSection");
